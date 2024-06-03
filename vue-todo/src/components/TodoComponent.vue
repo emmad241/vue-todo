@@ -7,7 +7,7 @@
         <span :class="{ done: todo.done }">{{ todo.text }}</span>
         <div class="actions">
           <label class="custom-checkbox">
-            <input type="checkbox" v-model="todo.done" />
+            <input type="checkbox" v-model="todo.done" @change="saveTodos" />
             <span class="checkmark"></span>
           </label>
           <button @click="removeTodo(index)">x</button>
@@ -25,15 +25,29 @@ export default {
       todos: []
     };
   },
+  mounted() {
+    this.loadTodos();
+  },
   methods: {
     addTodo() {
       if (this.newTodo.trim() !== '') {
         this.todos.push({ text: this.newTodo, done: false });
         this.newTodo = '';
+        this.saveTodos();
       }
     },
     removeTodo(index) {
       this.todos.splice(index, 1);
+      this.saveTodos();
+    },
+    saveTodos() {
+      localStorage.setItem('todos', JSON.stringify(this.todos));
+    },
+    loadTodos() {
+      const todos = localStorage.getItem('todos');
+      if (todos) {
+        this.todos = JSON.parse(todos);
+      }
     }
   }
 };
